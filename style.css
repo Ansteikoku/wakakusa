@@ -1,0 +1,32 @@
+body {
+  font-family: sans-serif;
+  background: #f8f8f8;
+  padding: 2em;
+}
+
+input, textarea {
+  display: block;
+  margin: 0.5em 0;
+  padding: 0.5em;
+  width: 100%;
+}
+
+button {
+  background: #27ae60;
+  color: white;
+  padding: 0.5em 1em;
+  border: none;
+}
+
+.thread {
+  background: white;
+  padding: 1em;
+  margin-top: 1em;
+  border-radius: 5px;
+}
+
+.comment {
+  padding-left: 1em;
+  margin-top: 0.5em;
+  color: #333;
+}

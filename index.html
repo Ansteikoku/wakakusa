@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>わかくさ掲示板</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>わかくさ掲示板</h1>
+
+  <div id="auth">
+    <input type="password" id="password" placeholder="パスワード">
+    <button onclick="checkPassword()">ログイン</button>
+  </div>
+
+  <div id="main" style="display: none;">
+    <form onsubmit="submitThread(event)">
+      <input type="text" id="thread_user" placeholder="あなたの名前">
+      <textarea id="thread_content" placeholder="スレッド内容"></textarea>
+      <button type="submit">スレッドを投稿</button>
+    </form>
+
+    <div id="threads"></div>
+  </div>
+
+  <!-- Supabase を読み込み、script.js をモジュールとして使う -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
