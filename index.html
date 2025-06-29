@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>わかくさ掲示板</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="login">
+    <h2>ログイン</h2>
+    <input type="text" id="name" placeholder="名前" />
+    <input type="password" id="password" placeholder="パスワード" />
+    <button onclick="login()">ログイン</button>
+    <p id="login-error" style="color:red;"></p>
+  </div>
+
+  <div id="bbs" style="display:none;">
+    <h2>わかくさ掲示板</h2>
+    <form id="postForm">
+      <textarea id="comment" placeholder="コメントを書く" required></textarea><br />
+      <button type="submit">投稿</button>
+    </form>
+    <div id="posts"></div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
