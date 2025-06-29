@@ -5,7 +5,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // パスワード認証
-function checkPassword() {
+window.checkPassword = function () {
   const input = document.getElementById('password').value;
   if (input === 'wakakusa') {
     document.getElementById('auth').style.display = 'none';
@@ -14,15 +14,15 @@ function checkPassword() {
   } else {
     alert('パスワードが間違っています');
   }
-}
+};
 
 // スレッド投稿
-async function submitThread(event) {
+window.submitThread = async function (event) {
   event.preventDefault();
   const user = document.getElementById('thread_user').value;
   const content = document.getElementById('thread_content').value;
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('threads')
     .insert([{ user_name: user, content: content }]);
 
@@ -34,7 +34,7 @@ async function submitThread(event) {
     document.getElementById('thread_user').value = '';
     document.getElementById('thread_content').value = '';
   }
-}
+};
 
 // コメント投稿
 async function submitComment(event, threadId) {
@@ -69,6 +69,7 @@ async function loadThreads() {
     threadDiv.className = 'thread';
     threadDiv.innerHTML = `<strong>${thread.user_name}</strong><p>${thread.content}</p>`;
 
+    // コメント一覧の取得
     const { data: comments } = await supabase
       .from('comments')
       .select('*')
@@ -82,6 +83,7 @@ async function loadThreads() {
       threadDiv.appendChild(commentDiv);
     }
 
+    // コメント投稿フォーム
     const commentForm = document.createElement('form');
     commentForm.className = 'comment-form';
     commentForm.onsubmit = (e) => submitComment(e, thread.id);
