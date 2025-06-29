@@ -1,81 +1,97 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_KEY = 'YOUR_PUBLIC_ANON_KEY';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const supabase = createClient(
-  'https://itxwvrjbrswgqsdcvbmh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0eHd2cmpicnN3Z3FzZGN2Ym1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEwOTk1ODksImV4cCI6MjA2NjY3NTU4OX0.xC5Xg3bgD8lTjSPodU1LW432A4zTWJXBsJ665mmExQU'
-)
-
-let currentUser = null
-
-// ログイン処理
-document.getElementById('loginBtn').addEventListener('click', () => {
-  const name = document.getElementById('name').value.trim()
-  const password = document.getElementById('password').value.trim()
-
-  if (password === 'wakakusa') {
-    currentUser = name || '名無し'
-    localStorage.setItem('userName', currentUser)
-    document.getElementById('login').style.display = 'none'
-    document.getElementById('bbs').style.display = 'block'
-    loadPosts()
+// パスワード認証
+function checkPassword() {
+  const input = document.getElementById('password').value;
+  if (input === 'wakakusa') {
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    loadThreads();
   } else {
-    document.getElementById('login-error').textContent = 'パスワードが間違っています'
+    alert('パスワードが間違っています');
   }
-})
-
-// 投稿処理
-document.getElementById('postForm').addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const comment = document.getElementById('comment').value.trim()
-
-  if (!comment) return
-
-  const { error } = await supabase.from('posts').insert([
-    { user_name: currentUser, comment: comment }
-  ])
-
-  if (error) {
-    alert('投稿に失敗しました')
-    return
-  }
-
-  document.getElementById('comment').value = ''
-  loadPosts()
-})
-
-// 投稿読み込み
-async function loadPosts() {
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('取得失敗:', error.message)
-    return
-  }
-
-  const postsDiv = document.getElementById('posts')
-  postsDiv.innerHTML = ''
-
-  data.forEach(post => {
-    const div = document.createElement('div')
-    div.className = 'post'
-    div.innerHTML = `
-      <p><strong>${post.user_name}</strong>: ${post.comment}</p>
-      <hr />
-    `
-    postsDiv.appendChild(div)
-  })
 }
 
-// 自動ログイン処理
-window.addEventListener('DOMContentLoaded', () => {
-  const name = localStorage.getItem('userName')
-  if (name) {
-    currentUser = name
-    document.getElementById('login').style.display = 'none'
-    document.getElementById('bbs').style.display = 'block'
-    loadPosts()
+// スレッド投稿
+async function submitThread(event) {
+  event.preventDefault();
+  const user = document.getElementById('thread_user').value;
+  const content = document.getElementById('thread_content').value;
+
+  const { data, error } = await supabase
+    .from('threads')
+    .insert([{ user_name: user, content: content }]);
+
+  if (error) {
+    alert('投稿エラー');
+    console.error(error);
+  } else {
+    loadThreads();
+    document.getElementById('thread_user').value = '';
+    document.getElementById('thread_content').value = '';
   }
-})
+}
+
+// コメント投稿
+async function submitComment(event, threadId) {
+  event.preventDefault();
+  const user = event.target.username.value;
+  const text = event.target.comment.value;
+
+  const { error } = await supabase
+    .from('comments')
+    .insert([{ thread_id: threadId, user_name: user, comment_text: text }]);
+
+  if (error) {
+    alert('コメント送信エラー');
+    console.error(error);
+  } else {
+    loadThreads();
+  }
+}
+
+// スレッド＋コメントの読み込み
+async function loadThreads() {
+  const { data: threads } = await supabase
+    .from('threads')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const threadsContainer = document.getElementById('threads');
+  threadsContainer.innerHTML = '';
+
+  for (const thread of threads) {
+    const threadDiv = document.createElement('div');
+    threadDiv.className = 'thread';
+    threadDiv.innerHTML = `<strong>${thread.user_name}</strong><p>${thread.content}</p>`;
+
+    // コメント一覧
+    const { data: comments } = await supabase
+      .from('comments')
+      .select('*')
+      .eq('thread_id', thread.id)
+      .order('created_at');
+
+    for (const comment of comments) {
+      const commentDiv = document.createElement('div');
+      commentDiv.className = 'comment';
+      commentDiv.innerHTML = `<strong>${comment.user_name}</strong>: ${comment.comment_text}`;
+      threadDiv.appendChild(commentDiv);
+    }
+
+    // コメント投稿フォーム
+    const commentForm = document.createElement('form');
+    commentForm.className = 'comment-form';
+    commentForm.onsubmit = (e) => submitComment(e, thread.id);
+    commentForm.innerHTML = `
+      <input type="text" name="username" placeholder="名前">
+      <input type="text" name="comment" placeholder="コメント">
+      <button type="submit">コメント</button>
+    `;
+    threadDiv.appendChild(commentForm);
+
+    threadsContainer.appendChild(threadDiv);
+  }
+}
