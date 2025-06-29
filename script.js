@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_KEY = 'YOUR_PUBLIC_ANON_KEY';
+const SUPABASE_URL = 'https://zjarxedwboflculxiqml.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqYXJ4ZWR3Ym9mbGN1bHhpcW1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNzY1NzgsImV4cCI6MjA2Njc1MjU3OH0.0qGl9PbLmmfbGIYjdtDp7yOymBzjgDfpD-unYlSlx9o';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // パスワード認証
