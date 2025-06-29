@@ -1,5 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm';
 
+// Supabaseの設定
 const SUPABASE_URL = 'https://zjarxedwboflculxiqml.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqYXJ4ZWR3Ym9mbGN1bHhpcW1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNzY1NzgsImV4cCI6MjA2Njc1MjU3OH0.0qGl9PbLmmfbGIYjdtDp7yOymBzjgDfpD-unYlSlx9o';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -27,8 +28,7 @@ window.submitThread = async function (event) {
     .insert([{ user_name: user, content: content }]);
 
   if (error) {
-    alert('投稿エラー');
-    console.error(error);
+    alert('投稿エラー: ' + error.message);  // エラーメッセージをアラートで表示
   } else {
     loadThreads();
     document.getElementById('thread_user').value = '';
@@ -47,8 +47,7 @@ async function submitComment(event, threadId) {
     .insert([{ thread_id: threadId, user_name: user, comment_text: text }]);
 
   if (error) {
-    alert('コメント送信エラー');
-    console.error(error);
+    alert('コメント送信エラー: ' + error.message);  // エラーメッセージをアラートで表示
   } else {
     loadThreads();
   }
